@@ -1,12 +1,11 @@
-package ro.fasttrackot.springhomework;
+package ro.fasttrackit.springhomework;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 @SpringBootApplication
-@ConfigurationPropertiesScan("ro.fasttrackot.springhomework")
-
+@ConfigurationPropertiesScan("ro.fasttrackit.springhomework")
 public class SpringHomeworkApplication {
 
     public static void main(String[] args) {

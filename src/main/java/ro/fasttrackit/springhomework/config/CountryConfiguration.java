@@ -1,4 +1,4 @@
-package ro.fasttrackit.springhomework.configuration;
+package ro.fasttrackit.springhomework.config;
 
 import lombok.Getter;
 import lombok.Setter;
