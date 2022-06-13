@@ -2,6 +2,7 @@ package ro.fasttrackit.springhomework.repository;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
+import ro.fasttrackit.springhomework.exception.CustomEntityNotFoundException;
 import ro.fasttrackit.springhomework.model.Country;
 
 import javax.annotation.Resource;
@@ -18,15 +19,19 @@ public class CountryRepository {
     @Resource(name = "headers")
     private Map<String, String> headers;
 
+    private boolean isIdEquals(String countryId, Country country) {
+        return country.getId().equals(countryId);
+    }
+
     public List<Country> getAllCountries(String includeNeighbour, String excludeNeighbour) {
         return this.countries.stream()
                 .filter(country -> {
                     boolean filterCondition = true;
                     if (includeNeighbour != null) {
-                        filterCondition = country.getNeighbours().contains(includeNeighbour);
+                        filterCondition = country.getNeighbors().contains(includeNeighbour);
                     }
                     if (excludeNeighbour != null) {
-                        filterCondition = filterCondition && !country.getNeighbours().contains(excludeNeighbour);
+                        filterCondition = filterCondition && !country.getNeighbors().contains(excludeNeighbour);
                     }
                     return filterCondition;
                 })
@@ -41,26 +46,26 @@ public class CountryRepository {
 
     public String getCapital(String countryId) {
         return countries.stream()
-                .filter(country -> country.getId().equals(countryId))
+                .filter(country -> isIdEquals(countryId, country))
                 .findFirst()
                 .map(Country::getCapital)
-                .orElseThrow(() -> new IllegalArgumentException("Country not found"));
+                .orElseThrow(() -> new CustomEntityNotFoundException(Country.class.getName(), countryId));
     }
 
     public Long getPopulation(String countryId) {
         return countries.stream()
-                .filter(country -> country.getId().equals(countryId))
+                .filter(country -> isIdEquals(countryId, country))
                 .findFirst()
                 .map(Country::getPopulation)
-                .orElseThrow(() -> new IllegalArgumentException("Country not found"));
+                .orElseThrow(() -> new CustomEntityNotFoundException(Country.class.getName(), countryId));
     }
 
     public List<String> getNeighbours(String countryId) {
         return countries.stream()
-                .filter(country -> country.getId().equals(countryId))
+                .filter(country -> isIdEquals(countryId, country))
                 .findFirst()
-                .map(Country::getNeighbours)
-                .orElseThrow(() -> new IllegalArgumentException("Country not found"));
+                .map(Country::getNeighbors)
+                .orElseThrow(() -> new CustomEntityNotFoundException(Country.class.getName(), countryId));
     }
 
     public Map<String, Long> getCountriesPopulation() {
@@ -74,12 +79,13 @@ public class CountryRepository {
     }
 
     public Country getClientCountry() {
-        if (!headers.containsKey("x-country")) {
+        String headerKey = "x-country";
+        if (!headers.containsKey(headerKey)) {
             throw new IllegalArgumentException("X-Country header not found");
         }
         return countries.stream()
-                .filter(country -> country.getName().equalsIgnoreCase(headers.get("x-country")))
+                .filter(country -> country.getName().equalsIgnoreCase(headers.get(headerKey)))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Country not found"));
+                .orElseThrow(() -> new CustomEntityNotFoundException(Country.class.getName(), headers.get(headerKey)));
     }
 }

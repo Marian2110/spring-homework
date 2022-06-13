@@ -11,11 +11,11 @@ import java.util.List;
 @ToString
 @EqualsAndHashCode
 public class Country {
-    private final String id;
-    private final String name;
-    private final String capital;
-    private final Long population;
-    private final Double area;
-    private final String continent;
-    private final List<String> neighbours;
+    private String id;
+    private String name;
+    private String capital;
+    private Long population;
+    private Double area;
+    private String continent;
+    private List<String> neighbors;
 }

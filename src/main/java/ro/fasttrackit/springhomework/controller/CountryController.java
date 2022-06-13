@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*;
 import ro.fasttrackit.springhomework.model.Country;
 import ro.fasttrackit.springhomework.service.CountryService;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 
