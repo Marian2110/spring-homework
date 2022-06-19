@@ -1,16 +1,12 @@
-package ro.fasttrackit.springhomework.config.country;
+package ro.fasttrackit.springhomework.util.reader;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
 import ro.fasttrackit.springhomework.model.Country;
 
 import java.util.List;
 
 @Slf4j
-@Component
-@Profile({"in-memory", "!file"})
 @AllArgsConstructor
 public class InMemoryCountryReader implements CountryReader {
     @Override

@@ -4,48 +4,32 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import ro.fasttrackit.springhomework.model.Country;
+import ro.fasttrackit.springhomework.util.reader.CountryReader;
 
 import java.util.List;
 import java.util.Map;
-
-import static java.util.stream.Collectors.toMap;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
 @AllArgsConstructor
 public class ContinentRepository {
-
-    private final List<Country> countries;
+    private final CountryReader countryReader;
 
     public List<Country> getAllCountriesByContinent(String continentName, Integer minPopulation) {
-        List<Country> countries = this.countries.stream()
-                .filter(country -> {
-                    boolean filterCondition = country.getContinent().equals(continentName);
-                    if (minPopulation != null) {
-                        filterCondition = filterCondition && country.getPopulation() >= minPopulation;
-                    }
-                    return filterCondition;
-                })
+        return readCountries().stream()
+                .filter(country -> country.getContinent().equals(continentName))
+                .filter(country -> minPopulation == null || country.getPopulation() >= minPopulation)
                 .toList();
-        log.info("Found {} countries in continent {}", countries.size(), continentName);
-        return countries;
     }
 
     public Map<String, List<Country>> getCountriesGroupedByContinent() {
-        List<String> continents = this.countries.stream()
-                .map(Country::getContinent)
-                .distinct()
-                .toList();
-        return continents.stream()
-                .collect(
-                        toMap(
-                                String::trim,
-                                continent -> countries.stream()
-                                        .filter(country -> country.getContinent().equals(continent))
-                                        .toList()
-                        )
-                );
+        return readCountries().stream()
+                .collect(Collectors.groupingBy(Country::getContinent));
+    }
 
+    private List<Country> readCountries() {
+        return countryReader.readCountries();
     }
 }
 

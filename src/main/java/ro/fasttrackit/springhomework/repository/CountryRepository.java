@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 import ro.fasttrackit.springhomework.exception.CustomEntityNotFoundException;
 import ro.fasttrackit.springhomework.model.Country;
+import ro.fasttrackit.springhomework.util.reader.CountryReader;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -14,7 +15,7 @@ import static java.util.stream.Collectors.toMap;
 @Repository
 @AllArgsConstructor
 public class CountryRepository {
-    private final List<Country> countries;
+    private final CountryReader countryReader;
 
     @Resource(name = "headers")
     private Map<String, String> headers;
@@ -24,28 +25,20 @@ public class CountryRepository {
     }
 
     public List<Country> getAllCountries(String includeNeighbour, String excludeNeighbour) {
-        return this.countries.stream()
-                .filter(country -> {
-                    boolean filterCondition = true;
-                    if (includeNeighbour != null) {
-                        filterCondition = country.getNeighbors().contains(includeNeighbour);
-                    }
-                    if (excludeNeighbour != null) {
-                        filterCondition = filterCondition && !country.getNeighbors().contains(excludeNeighbour);
-                    }
-                    return filterCondition;
-                })
+        return readCountries().stream()
+                .filter(country -> country.getNeighbors().contains(includeNeighbour))
+                .filter(country -> !country.getNeighbors().contains(excludeNeighbour))
                 .toList();
     }
 
     public List<String> getAllCountryNames() {
-        return countries.stream()
+        return readCountries().stream()
                 .map(Country::getName)
                 .toList();
     }
 
     public String getCapital(String countryId) {
-        return countries.stream()
+        return readCountries().stream()
                 .filter(country -> isIdEquals(countryId, country))
                 .findFirst()
                 .map(Country::getCapital)
@@ -53,7 +46,7 @@ public class CountryRepository {
     }
 
     public Long getPopulation(String countryId) {
-        return countries.stream()
+        return readCountries().stream()
                 .filter(country -> isIdEquals(countryId, country))
                 .findFirst()
                 .map(Country::getPopulation)
@@ -61,7 +54,7 @@ public class CountryRepository {
     }
 
     public List<String> getNeighbours(String countryId) {
-        return countries.stream()
+        return readCountries().stream()
                 .filter(country -> isIdEquals(countryId, country))
                 .findFirst()
                 .map(Country::getNeighbors)
@@ -69,7 +62,7 @@ public class CountryRepository {
     }
 
     public Map<String, Long> getCountriesPopulation() {
-        return countries.stream()
+        return readCountries().stream()
                 .collect(
                         toMap(
                                 Country::getName,
@@ -83,9 +76,13 @@ public class CountryRepository {
         if (!headers.containsKey(headerKey)) {
             throw new IllegalArgumentException("X-Country header not found");
         }
-        return countries.stream()
+        return readCountries().stream()
                 .filter(country -> country.getName().equalsIgnoreCase(headers.get(headerKey)))
                 .findFirst()
                 .orElseThrow(() -> new CustomEntityNotFoundException(Country.class.getName(), headers.get(headerKey)));
+    }
+
+    private List<Country> readCountries() {
+        return countryReader.readCountries();
     }
 }

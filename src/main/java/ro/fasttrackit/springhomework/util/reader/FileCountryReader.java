@@ -1,9 +1,8 @@
-package ro.fasttrackit.springhomework.config.country;
+package ro.fasttrackit.springhomework.util.reader;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
+import ro.fasttrackit.springhomework.config.country.CountryConfiguration;
 import ro.fasttrackit.springhomework.exception.MissingFileException;
 import ro.fasttrackit.springhomework.model.Country;
 
@@ -15,8 +14,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Slf4j
-@Profile("file")
-@Component
 @AllArgsConstructor
 public class FileCountryReader implements CountryReader {
     private final CountryConfiguration countryConfiguration;

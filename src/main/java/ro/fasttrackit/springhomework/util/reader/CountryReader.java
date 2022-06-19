@@ -1,4 +1,4 @@
-package ro.fasttrackit.springhomework.config.country;
+package ro.fasttrackit.springhomework.util.reader;
 
 import ro.fasttrackit.springhomework.model.Country;
 
